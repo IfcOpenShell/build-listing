@@ -58,5 +58,5 @@ for section, subsections in itertools.groupby(data, key=operator.itemgetter(0)):
         print('item|', '|'.join(osh))
         print('|'.join(['---']*(len(osh) + 1)))
         for p in product:
-            print(p, '|', '|'.join(map(lambda t: '[%s%%s](%%s)' % PREFIX % t, (d.get((p, o), ('-', '')) for o in os))))
+            print(p, '|', '|'.join(map(lambda t: '[%%s](%s%%s)' % PREFIX % t, (d.get((p, o), ('-', '')) for o in os))))
         print()
