@@ -1,8 +1,8 @@
-# aws s3api list-objects --output json --bucket ifcopenshell-builds > s3data.txt
 import functools
 import itertools
 import operator
 import re
+import sys
 import natsort
 import humanize
 
@@ -10,7 +10,7 @@ PREFIX='https://s3.amazonaws.com/ifcopenshell-builds/'
 
 def _():
     import json
-    d = json.load(open('s3data.txt', encoding='utf-16'))
+    d = json.load(open(sys.argv[1]))
     for c in d['Contents']:
         k = c['Key']
         if k.endswith('.zip'):
