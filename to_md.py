@@ -5,6 +5,7 @@ import re
 import sys
 import natsort
 import humanize
+from packaging.utils import parse_wheel_filename
 
 PREFIX='https://s3.amazonaws.com/ifcopenshell-builds/'
 
@@ -42,6 +43,26 @@ def _():
 
 
                 yield version, hash, c['LastModified'], product, os, c['Size'], k
+        elif k.endswith('.whl'):
+            fixed = k.replace('ifcopenshell-python', 'ifcopenshell_python')
+            fixed = re.sub(r'(v\d\.\d\.\d)\-(\w{7})', 'v0.8.1+\\2', fixed)
+            try:
+                module_name, version, _, tags = parse_wheel_filename(fixed)
+            except:
+                continue
+
+            if len(tags) != 1:
+                continue
+
+            tag = next(iter(tags))
+
+            if 'wasm' not in tag.platform:
+                continue
+
+            abi = re.sub('c|p|y', '', tag.abi)
+
+            yield f'v{version.public}', version.local, c['LastModified'], f'{module_name}-{abi}', 'WASM', c['Size'], k
+
 
 hashtodate = dict((hash, functools.reduce(min, (t[1] for t in hash_dates))) for hash, hash_dates in itertools.groupby(sorted((a[1],a[2]) for a in _()), key=operator.itemgetter(0)))
 data = natsort.natsorted(_(), reverse=True)
