@@ -3,6 +3,7 @@ import itertools
 import operator
 import re
 import sys
+from urllib.parse import quote_plus
 import natsort
 import humanize
 from packaging.utils import parse_wheel_filename
@@ -45,7 +46,7 @@ def _():
                 yield version, hash, c['LastModified'], product, os, c['Size'], k
         elif k.endswith('.whl'):
             fixed = k.replace('ifcopenshell-python', 'ifcopenshell_python')
-            fixed = re.sub(r'(v\d\.\d\.\d)\-(\w{7})', 'v0.8.1+\\2', fixed)
+            fixed = re.sub(r'(v\d\.\d\.\d)(\-|\+)(\w{7})', 'v0.8.1+\\3', fixed)
             try:
                 module_name, version, _, tags = parse_wheel_filename(fixed)
             except:
@@ -74,7 +75,7 @@ for section, subsections in itertools.groupby(data, key=operator.itemgetter(0)):
         rows = list(rows)
         product, os, size = map(lambda vs: natsort.natsorted(set(vs)), zip(*(r[3:6] for r in rows)))
         osh = list(map(lambda s: s[0].upper() + s[1:], map(lambda s: re.sub(r'(32|64)', ' \\1bit', s.replace('m1', ' M1')).replace('os', 'OS'), os)))
-        d = dict((r[3:5], (humanize.naturalsize(r[5]), r[6])) for r in rows)
+        d = dict((r[3:5], (humanize.naturalsize(r[5]), quote_plus(r[6]))) for r in rows)
         print()
         print('item|', '|'.join(osh))
         print('|'.join(['---']*(len(osh) + 1)))
