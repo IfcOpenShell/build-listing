@@ -52,6 +52,9 @@ def _():
             except:
                 continue
 
+            if module_name == "ifcopenshell":
+                module_name += "-python"
+
             if len(tags) != 1:
                 continue
 
