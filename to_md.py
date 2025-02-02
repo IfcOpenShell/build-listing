@@ -37,7 +37,7 @@ def _():
                 else:
                     continue
 
-                if os in {'macosm164', 'macos64', 'linux64', 'win32', 'win64', 'linux32'}:
+                if os in {'macosm164', 'macos64', 'linux64', 'linuxarm64', 'win32', 'win64', 'linux32'}:
                     pass
                 else:
                     continue
@@ -77,7 +77,7 @@ for section, subsections in itertools.groupby(data, key=operator.itemgetter(0)):
         print('###', hash, '(%s)' % hashtodate[hash])
         rows = list(rows)
         product, os, size = map(lambda vs: natsort.natsorted(set(vs)), zip(*(r[3:6] for r in rows)))
-        osh = list(map(lambda s: s[0].upper() + s[1:], map(lambda s: re.sub(r'(32|64)', ' \\1bit', s.replace('m1', ' M1')).replace('os', 'OS'), os)))
+        osh = list(map(lambda s: s[0].upper() + s[1:], map(lambda s: re.sub(r'(32|64)', ' \\1bit', s.replace('m1', ' M1').replace('arm', ' ARM').replace('os', 'OS'), os)))
         d = dict((r[3:5], (humanize.naturalsize(r[5]), quote_plus(r[6]))) for r in rows)
         print()
         print('item|', '|'.join(osh))
