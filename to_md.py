@@ -20,7 +20,7 @@ def _():
             if len(parts) == 4:
                 product, version, hash, os = parts
                 
-                if product in {'IfcConvert', 'IfcGeomServer'}:
+                if product in {'IfcConvert', 'IfcGeomServer', 'svgfill'}:
                     pass
                 elif re.match(r'^ifcopenshell-python-\d{2,3}u?$', product):
                     pass
