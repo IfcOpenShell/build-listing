@@ -1,3 +1,11 @@
+"""
+Usage: `python to_md.py s3data.json > output.md`
+
+To generate 's3data.json', use the following AWS CLI command (no credentials required):
+    aws s3api list-objects --output json --bucket ifcopenshell-builds --no-sign-request > s3data.json
+
+"""
+
 import functools
 import itertools
 import operator
@@ -67,6 +75,10 @@ def _():
 
             yield f'v{version.public}', version.local, c['LastModified'], f'{module_name}-{abi}', 'WASM', c['Size'], k
 
+
+if len(sys.argv) != 2:
+    print(__doc__)
+    exit(1)
 
 print("# IfcOpenShell Builds")
 print("Source code - [IfcOpenShell/build-listing](https://github.com/IfcOpenShell/build-listing)")
