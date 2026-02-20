@@ -68,6 +68,10 @@ def _():
             yield f'v{version.public}', version.local, c['LastModified'], f'{module_name}-{abi}', 'WASM', c['Size'], k
 
 
+print("# IfcOpenShell Builds")
+print("Source code - [IfcOpenShell/build-listing](https://github.com/IfcOpenShell/build-listing)")
+print()
+
 hashtodate = dict((hash, functools.reduce(min, (t[1] for t in hash_dates))) for hash, hash_dates in itertools.groupby(sorted((a[1],a[2]) for a in _()), key=operator.itemgetter(0)))
 data = natsort.natsorted(_(), reverse=True)
 for section, subsections in itertools.groupby(data, key=operator.itemgetter(0)):
