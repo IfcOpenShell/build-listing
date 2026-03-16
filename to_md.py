@@ -32,6 +32,14 @@ class Asset(NamedTuple):
     key: str
 
 
+def is_valid_product(product):
+    if product in {"IfcConvert", "IfcGeomServer", "svgfill"}:
+        return True
+    elif re.match(r"^ifcopenshell-python-\d{2,3}u?$", product):
+        return True
+    return False
+
+
 def get_bucket_data():
     bucket = json.load(open(sys.argv[1]))
     for zip_data in bucket["Contents"]:
@@ -41,10 +49,12 @@ def get_bucket_data():
             if len(parts) == 4:
                 product, version, commit, os = parts
 
-                if product in {"IfcConvert", "IfcGeomServer", "svgfill"}:
+                if is_valid_product(product):
                     pass
-                elif re.match(r"^ifcopenshell-python-\d{2,3}u?$", product):
-                    pass
+                elif product.count("-") == 1 and is_valid_product(product.split("-")[0]) and os == "arm64":
+                    parts = key.removesuffix(".zip").rsplit("-", 4)
+                    product, version, commit, os, arm64 = parts
+                    os = f"{os}-{arm64}"
                 else:
                     continue
 
@@ -55,12 +65,29 @@ def get_bucket_data():
                 if not re.match(r"^v\d\.\d\.\d+$", version):
                     continue
 
-                if os in {"macosm164", "macos64", "linux64", "linuxarm64", "win32", "win64", "linux32"}:
+                if os in {
+                    "macosm164",
+                    "macos64",
+                    "linux64",
+                    "linuxarm64",
+                    "win32",
+                    "win64",
+                    "linux32",
+                    "win-arm64",
+                }:
                     pass
                 else:
                     continue
 
-                yield Asset(version, commit, zip_data["LastModified"], product, os, zip_data["Size"], key)
+                yield Asset(
+                    version,
+                    commit,
+                    zip_data["LastModified"],
+                    product,
+                    os,
+                    zip_data["Size"],
+                    key,
+                )
         elif key.endswith(".whl"):
             fixed = key.replace("ifcopenshell-python", "ifcopenshell_python")
             fixed = re.sub(r"(v\d\.\d\.\d)(\-|\+)(\w{7})", "v0.8.1+\\3", fixed)
@@ -129,6 +156,7 @@ for section, subsections in itertools.groupby(data, key=operator.attrgetter("ver
             os = os.replace("m1", " M1")
             os = os.replace("arm", " ARM")
             os = os.replace("os", "OS")
+            os = os.replace("win-", "win")
             os = re.sub(r"(32|64)", r" \1bit", os)
             os = f"{os[0].upper()}{os[1:]}"
             return os
