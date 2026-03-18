@@ -51,7 +51,7 @@ def get_bucket_data():
 
                 if is_valid_product(product):
                     pass
-                elif product.count("-") == 1 and is_valid_product(product.split("-")[0]) and os == "arm64":
+                elif product.count("-") and is_valid_product(product.rsplit("-", 1)[0]) and os == "arm64":
                     parts = key.removesuffix(".zip").rsplit("-", 4)
                     product, version, commit, os, arm64 = parts
                     os = f"{os}-{arm64}"
