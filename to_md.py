@@ -33,7 +33,7 @@ class Asset(NamedTuple):
 
 
 def is_valid_product(product):
-    if product in {"IfcConvert", "IfcGeomServer", "svgfill", "IfcViewerFull", "IfcViewerMinimal"}:
+    if product in {"IfcConvert", "IfcGeomServer", "svgfill", "IfcViewerFull", "IfcViewerMinimal", "ifcopenshell-modular"}:
         return True
     elif re.match(r"^ifcopenshell-python-\d{2,3}u?$", product):
         return True
@@ -50,7 +50,8 @@ def get_bucket_data():
                 product, version, commit, os = parts
 
                 if is_valid_product(product):
-                    pass
+                    if product == "ifcopenshell-modular":
+                        product = "ifcopenshell-python-313-modular"
                 elif product.count("-") and is_valid_product(product.rsplit("-", 1)[0]) and os == "arm64":
                     parts = key.removesuffix(".zip").rsplit("-", 4)
                     product, version, commit, os, arm64 = parts
@@ -74,6 +75,7 @@ def get_bucket_data():
                     "win64",
                     "linux32",
                     "win-arm64",
+                    "pyodide"
                 }:
                     pass
                 else:
@@ -84,7 +86,7 @@ def get_bucket_data():
                     commit,
                     zip_data["LastModified"],
                     product,
-                    os,
+                    "WASM" if os == "pyodide" else os,
                     zip_data["Size"],
                     key,
                 )
