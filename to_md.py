@@ -33,7 +33,7 @@ class Asset(NamedTuple):
 
 
 def is_valid_product(product):
-    if product in {"IfcConvert", "IfcGeomServer", "svgfill", "IfcViewerFull", "IfcViewerMinimal", "ifcopenshell-modular"}:
+    if product in {"IfcConvert", "IfcGeomServer", "svgfill", "BonsaiViewer", "IfcViewerMinimal", "ifcopenshell-modular"}:
         return True
     elif re.match(r"^ifcopenshell-python-\d{2,3}u?$", product):
         return True
