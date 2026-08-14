@@ -63,7 +63,7 @@ def get_bucket_data():
                     continue
 
                 # E.g. searching for 'v0.8.5'.
-                if not re.match(r"^v\d\.\d\.\d+$", version):
+                if not re.match(r"^v\d\.\d\.\d+.+$", version):
                     continue
 
                 if os in {
