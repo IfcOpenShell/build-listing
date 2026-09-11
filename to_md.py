@@ -62,8 +62,8 @@ def get_bucket_data():
                 if len(commit) != 7:
                     continue
 
-                # E.g. searching for 'v0.8.5'.
-                if not re.match(r"^v\d\.\d\.\d+.+$", version):
+                # E.g. searching for 'v0.8.5' or 'v0.9.0alpha0'.
+                if not re.match(r"^v\d\.\d\.\d+.*$", version):
                     continue
 
                 if os in {
