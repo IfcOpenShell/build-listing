@@ -5,52 +5,63 @@ on:
     - cron: '0 0 * * *'
   workflow_dispatch:
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
-# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
 concurrency:
   group: "pages"
   cancel-in-progress: false
 
 jobs:
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+
       - name: Setup Pages
         uses: actions/configure-pages@v6
+
       - uses: actions/setup-python@v6
         with:
-          python-version: '3.11' # Version range or exact version of a Python version to use, using SemVer's version range syntax
-          architecture: 'x64' # optional x64 or x86. Defaults to x64 if not specified
+          python-version: '3.11'
+          architecture: 'x64'
+
       - name: Dependencies
         run: |
           python -m pip install natsort humanize awscli markdown packaging
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
           aws-access-key-id: ${{ secrets.AWS_UPLOAD_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_UPLOAD_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
+
       - name: Create content
         run: |
           aws s3api list-objects --output json --bucket ifcopenshell-builds > s3data.txt
           python to_md.py s3data.txt > output.md
           mkdir output
           python -m markdown output.md -x tables > output/index.html
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v5
         with:
           path: output
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5
